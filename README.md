@@ -1,4 +1,4 @@
-# Dimmable lamp with ESP32 and Dimmer Módule
+# Lampada dimerizável ultilizando ESP32 e Módulo Dimmer
 Projeto desenvolvido para a disciplina de Software em Tempo Real, no curso de Engenharia de computação da Universidade Federal do Ceará(Campus Sobral).Este projeto tem como objetivo por em prática alguns dos conceitos abordados durante a disciplina e desenvolver a intimidade dos alunos na prática com micro controladores.
 
 ## Material ultilizado
