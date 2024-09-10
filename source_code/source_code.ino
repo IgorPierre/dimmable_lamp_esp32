@@ -1,10 +1,10 @@
 #define pinZC 2
 #define pinDIM 4  
-#define pinLDR 7
+#define pinLDR 36
 #define intervaloLeitura 1000
 #define periodo 8333
 
-#define luminosidadeIdeal 500
+#define luminosidadeIdeal 
 #define iMin 20
 #define iMax 90
 #define difMin 0
