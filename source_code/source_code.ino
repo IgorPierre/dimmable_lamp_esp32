@@ -1,63 +1,38 @@
-#define pinZC 2 
-#define pinDIM 4 
-#define pinLDR 36      
-#define intervaloLeitura 1000   
-#define periodo 8333    
+#define dimmer 5    // Pino escolhido para controlar o dimmer (GPIO 5)
+#define potPin 36   // Pino de leitura do potenciômetro (GPIO 36 no ESP32, que é A0)
 
-#define luminosidadeIdeal 500   
-#define iMin 20                 
-#define iMax 90     
-#define difMin 0      
-#define difMax 200  
+// Variáveis para controle da luminosidade
+volatile long lum = 0;
 
-volatile int intensidade = 0;
-unsigned long controleTempo;  
+void zeroCross() {
+  if (lum > 100) lum = 100;
+  if (lum < 0) lum = 0;
+
+  long t1 = 8200L * (100L - lum) / 100L;
+  delayMicroseconds(t1);
+  digitalWrite(dimmer, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(dimmer, LOW);
+}
 
 void setup() {
-  Serial.begin(115200);
-  
-  pinMode(pinDIM, OUTPUT); 
-  pinMode(pinLDR, INPUT);    
-  pinMode(pinZC, INPUT);       
-  attachInterrupt(digitalPinToInterrupt(pinZC), sinalZC, RISING); 
+  Serial.begin(115200);   // Inicializa o monitor serial para debug
+  pinMode(dimmer, OUTPUT);
+  pinMode(potPin, INPUT); // Configura o pino do potenciômetro como entrada
 
-  controleTempo = millis();
-  Serial.println("Sistema de lâmpada dimerizável iniciado com KY-018 LDR.");
+  // Configura o pino para interrupção de cruzamento por zero
+  attachInterrupt(digitalPinToInterrupt(4), zeroCross, RISING);  // Supondo que o cruzamento por zero esteja no GPIO 4
 }
 
 void loop() {
-  if (millis() - controleTempo > intervaloLeitura) {
-    Serial.println("Lendo luminosidade...");
-    
-    int luminosidade = analogRead(pinLDR);    
-    float difLuminosidade = luminosidadeIdeal - luminosidade;
-    
-    Serial.print("Luminosidade: ");
-    Serial.println(luminosidade);
+  int potValue = analogRead(potPin);  // Leitura do potenciômetro (0 a 4095)
+  lum = map(potValue, 0, 4095, 10, 90); // Mapeia o valor do potenciômetro para a intensidade desejada
   
-    Serial.println("Calculando intensidade...");
-    
-    if (difLuminosidade > difMax) intensidade = iMax;
-    else if (difLuminosidade < difMin) intensidade = 0;
-    else {
-      intensidade = map(int(difLuminosidade), int(difMin), int(difMax), iMin, iMax);
-    }
-    
-    Serial.print("Intensidade: ");
-    Serial.println(intensidade);
+  // Loga o valor do potenciômetro e a luminosidade ajustada
+  Serial.print("Valor do potenciômetro: ");
+  Serial.println(potValue);
+  Serial.print("Luminosidade ajustada: ");
+  Serial.println(lum);
 
-    controleTempo += intervaloLeitura;
-  }
-}
-
-void sinalZC() {
-  if (intensidade < iMin) return;
-  if (intensidade > iMax) intensidade = iMax;
-
-  int delayInt = periodo - (intensidade * (periodo / 100));
-
-  delayMicroseconds(delayInt);
-  digitalWrite(pinDIM, HIGH);    
-  delayMicroseconds(6);        
-  digitalWrite(pinDIM, LOW);    
+  delay(100); // Ajuste conforme necessário para suavizar as leituras
 }
