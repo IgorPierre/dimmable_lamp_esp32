@@ -1,4 +1,4 @@
-# Dimmable Lamp using ESP32 and Dimmer Module
+# Dimmable Lamp using ESP32 and Dimmer ESP32 Module
 
 Project developed for the **Real-Time Software** course in the **Computer Engineering** program at the **Federal University of Ceará** (Sobral Campus). This project aims to apply concepts discussed during the course and to develop students' practical skills with microcontrollers.
 
